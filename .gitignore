@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+paper/results/
+paper/checks/
+results/
+*.tmp
+*.tar.gz
+.env
+activation.raisim

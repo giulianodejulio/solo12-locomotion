@@ -1,0 +1,10 @@
+{
+  "rl-tutorials": {
+    "repository": "https://github.com/giulianodejulio/rl-tutorials.git",
+    "revision": "6253a7cb7de73efa554a5e715120d303da864af9"
+  },
+  "quadruped-rl": {
+    "repository": "https://gitlab.laas.fr/paleziart/quadruped-rl.git",
+    "revision": "a9df18091c79bc3519a9a7bcb7b7ae07183f3f82"
+  }
+}
