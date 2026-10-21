@@ -14,6 +14,8 @@ import numpy as np
 from paper.config import load_config
 from paper.env import PaperSolo12Env
 from paper.evaluate import render_trace
+from paper.observation import (HISTORY_BUFFER_LENGTH, append_history,
+                               history_parts, compose_observation)
 
 
 WORKSPACE = Path(__file__).resolve().parents[3]
@@ -51,8 +53,8 @@ class OfficialPolicy:
         self.mean = np.loadtxt(directory/'mean2000.csv', dtype=np.float32)
         self.var = np.loadtxt(directory/'var2000.csv', dtype=np.float32)
         self.nominal = np.asarray(nominal).copy()
-        self.errors = np.zeros((6, 12))
-        self.velocities = np.zeros((6, 12))
+        self.errors = np.zeros((HISTORY_BUFFER_LENGTH, 12))
+        self.velocities = np.zeros((HISTORY_BUFFER_LENGTH, 12))
         self.target = self.nominal.copy()
         self.previous = self.nominal.copy()
         self.preprevious = self.nominal.copy()
@@ -60,21 +62,17 @@ class OfficialPolicy:
     def predict(self, env, command):
         q, qd = env.data.qpos[env.qadr].copy(), env.data.qvel[env.vadr].copy()
         rotation, true_velocity, omega = env._body_state()
-        self.errors[:-1], self.errors[-1] = self.errors[1:], self.target-q
-        self.velocities[:-1], self.velocities[-1] = self.velocities[1:], qd
+        append_history(self.errors, self.velocities, self.target-q, qd)
         # Upstream update_history updates both targets BEFORE constructing obs.
         self.preprevious, self.previous = self.previous.copy(), self.target.copy()
         common = np.concatenate([
             rotation[2], q, qd, self.previous, self.preprevious,
-            self.errors[0], self.velocities[0], self.errors[2], self.velocities[2],
-            self.errors[4], self.velocities[4]])
+            *history_parts(self.errors, self.velocities)])
         estimated_velocity = self.estimator(common)
-        observation = np.concatenate([
+        observation = compose_observation(
             rotation[2], true_velocity if self.velocity_source == 'truth' else estimated_velocity,
-            omega, command, q, qd,
-            self.previous, self.preprevious,
-            self.errors[0], self.velocities[0], self.errors[2], self.velocities[2],
-            self.errors[4], self.velocities[4]])
+            omega, command, q, qd, self.previous, self.preprevious,
+            self.errors, self.velocities)
         normalized = np.clip((observation-self.mean)/np.sqrt(self.var+1e-8), -10, 10)
         action = np.clip(self.actor(normalized), -np.pi, np.pi)
         self.target = self.nominal + .3*action

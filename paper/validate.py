@@ -32,8 +32,11 @@ def main():
     obs, reward, term, trunc, info = env.step(action)
     target = env.nominal+.3*action
     np.testing.assert_allclose(env.last_target, target)
-    np.testing.assert_allclose(env.error_history[0], target-env.data.qpos[env.qadr])
-    np.testing.assert_allclose(env.error_history[1], old_error[0])
+    np.testing.assert_allclose(env.error_history[-1], target-env.data.qpos[env.qadr])
+    np.testing.assert_allclose(env.error_history[:-1], old_error[1:])
+    for offset, row in zip((60,84,108),(0,2,4)):
+        np.testing.assert_allclose(obs[offset:offset+12], env.error_history[row])
+        np.testing.assert_allclose(obs[offset+12:offset+24], env.velocity_history[row])
     np.testing.assert_allclose(obs[36:48], target)
     np.testing.assert_allclose(obs[48:60], old_target)
     np.testing.assert_allclose(info['cost_smoothness1'], 2.5*np.sum((target-old_target)**2))

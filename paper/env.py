@@ -11,6 +11,7 @@ import mujoco
 import numpy as np
 
 from paper.config import SCENE, load_config
+from paper.observation import HISTORY_BUFFER_LENGTH, append_history, compose_observation
 
 LEGS = ('FL', 'FR', 'HL', 'HR')
 
@@ -186,9 +187,13 @@ class PaperSolo12Env(gym.Env):
             mujoco.mj_forward(self.model, self.data)
             self.last_target = self.nominal.copy()
             self.lastlast_target = self.nominal.copy()
-            error = self.last_target-self.data.qpos[self.qadr]
-            self.error_history = np.tile(error, (3, 1))
-            self.velocity_history = np.zeros((3, 12))
+            self.error_history = np.zeros((HISTORY_BUFFER_LENGTH, 12))
+            self.velocity_history = np.zeros((HISTORY_BUFFER_LENGTH, 12))
+            # Prime one deployment-style sample; selected rows still contain
+            # zero history, and subsequent samples align with OfficialPolicy.
+            append_history(self.error_history, self.velocity_history,
+                           self.last_target-self.data.qpos[self.qadr],
+                           self.data.qvel[self.vadr])
         noise = self.noise_scale if self.randomize else 0.
         self.kp = c['kp'] + noise*self.np_random.uniform(*c['kp_noise'])
         self.kd = c['kd'] + noise*self.np_random.uniform(*c['kd_noise'])
@@ -209,9 +214,8 @@ class PaperSolo12Env(gym.Env):
         if self.randomize:
             for j, scale in zip((0, 1, 2, 4, 5), self.config['observation_noise']):
                 parts[j] += self.noise_scale*self.np_random.uniform(-scale, scale, parts[j].shape)
-        for j in range(3):
-            parts.extend((self.error_history[j], self.velocity_history[j]))
-        return np.concatenate(parts).astype(np.float32)
+        return compose_observation(*parts, self.error_history,
+                                   self.velocity_history).astype(np.float32)
 
     def step(self, action):
         if self.done:
@@ -252,13 +256,11 @@ class PaperSolo12Env(gym.Env):
         self.failed = bool(bad_contact)
         terminal = self.config['terminal_penalty'] if self.failed else 0.
         reward = float(tracking - self.reward_scale*penalty-terminal)
-        self.error_history[1:] = self.error_history[:-1].copy()
-        self.velocity_history[1:] = self.velocity_history[:-1].copy()
-        self.error_history[0] = target-self.data.qpos[self.qadr]
-        self.velocity_history[0] = self.data.qvel[self.vadr]
+        append_history(self.error_history, self.velocity_history,
+                       target-self.data.qpos[self.qadr], self.data.qvel[self.vadr])
         if self.randomize:
-            self.error_history[0] += self.noise_scale*self.np_random.uniform(-.05, .05, 12)
-            self.velocity_history[0] += self.noise_scale*self.np_random.uniform(-.5, .5, 12)
+            self.error_history[-1] += self.noise_scale*self.np_random.uniform(-.05, .05, 12)
+            self.velocity_history[-1] += self.noise_scale*self.np_random.uniform(-.5, .5, 12)
         self.lastlast_target, self.last_target = self.last_target.copy(), target.copy()
         truncated = self.t >= self.config['episode_steps'] and not self.failed
         self.done = self.failed or truncated

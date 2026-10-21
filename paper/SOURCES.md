@@ -27,7 +27,7 @@ Primary specification:
 | Actions | Nominal pose + 3e-1 * policy output; no accumulated offsets |
 | Pose | Symmetric official pose: HAA +/-4e-2; front HFE/KFE 8e-1/-1.6; hind -8e-1/1.6 |
 | Observation | 132 values: projected vertical (3), base linear/angular velocities in body (3+3), command (3), joint q/qd (24), previous two absolute targets (24), three error/velocity history pairs (72). No world position, base height or time-to-go input |
-| Histories | Current error = previous applied target minus measured q, followed by two older samples, similarly qd. Noise is sampled once when storing each history entry |
+| Histories | Official oldest-first six-sample buffers, rows 0,2,4 (ages 5,3,1 policy steps); error = applied target minus measured q. Noise sampled once when storing an entry. One initial deployment-style sample primes the buffers after bounded settling |
 | Rewards | All eight penalty terms and combined 3D velocity tracking, equations and weights in article Table 3 |
 | Energy | Article equation Pf + (tau + tau_f)^2/4.81 with tau_f=4.77e-2 sign(qd)+1.35e-4 qd; mean power over physics substeps in W |
 | Smoothness | First and second differences of absolute angle targets |
@@ -61,8 +61,13 @@ reward definitions:
   published. We define one canonical iteration as 300*100=30000 samples.
 - Published command sampling is symmetric and noise-scaled. Public C++ samples
   around forward command 5e-1 with a different range. We use published sampling.
-- The published histories have three policy samples; C++ actually indexes a
-  six-sample buffer at 0,2,4. We implement the three consecutive measurements.
+- The published histories contain three samples; we follow the official C++
+  implementation: six-slot oldest-first buffers sampled at 0,2,4. This excludes
+  the newest sample (slot 5), avoiding a duplicate of current qd. The environment
+  and published-policy adapter share the 132-value layout implementation.
+  Training uses simulated body velocity; deployment uses the authors' estimator.
+  Hard reset uses bounded settling and primes one sample, as in the deployment
+  adapter, rather than reproducing RaiSim reset's six physics integrations.
 - The source has unsafe/uninitialized quantities and unbounded reset loops;
   we do not reproduce undefined behavior. Settling is bounded at 200 physics
   steps under nominal PD, then joint/base velocities are reset to zero.

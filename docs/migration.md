@@ -18,8 +18,11 @@ registrazioni locali della demo. La cronologia remota non è stata riscritta.
 | paper.split_teleop_gifs | tools.export_gifs |
 
 Le modifiche all'ambiente di training non sono parte di questa migrazione:
-`paper/env.py` e `paper/config.py` mantengono i digest necessari a risolvere
-i checkpoint esistenti. Le copie `source/` nei risultati restano intatte,
+Al momento della migrazione `paper/env.py` e `paper/config.py` mantenevano
+i digest dei checkpoint esistenti. Il successivo allineamento delle osservazioni
+al buffer originale ha cambiato il digest e include anche `paper/observation.py`:
+i checkpoint con la vecchia storia non sono compatibili col nuovo ambiente.
+Le copie `source/` nei risultati restano intatte,
 anche quando riportano vecchi percorsi assoluti.
 
 ## Backup e dipendenze

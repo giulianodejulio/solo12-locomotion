@@ -10,7 +10,8 @@ from paper.config import ROOT, SCENE, model_digest
 
 
 def env_digest():
-    return hashlib.sha256((ROOT/'env.py').read_bytes()+(ROOT/'config.py').read_bytes()).hexdigest()
+    return hashlib.sha256(b''.join((ROOT/name).read_bytes() for name in
+                          ('env.py','config.py','observation.py'))).hexdigest()
 
 
 def prepare_run(directory, config):

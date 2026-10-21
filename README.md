@@ -16,7 +16,10 @@ precedente resta in [rl-tutorials](https://github.com/giulianodejulio/rl-tutoria
 | `workspace/` | Dockerfile, dipendenze fissate, bootstrap e ricostruzione workspace |
 
 Il modulo `paper` mantiene il nome originario per conservare i comandi e la
-compatibilità dei checkpoint. Il training non importa la demo: contatti più
+struttura degli esperimenti. La nuova osservazione segue il buffer originale
+degli autori (6 campioni, righe 0/2/4); i checkpoint con la precedente storia
+non sono compatibili. `python3 -m tools.check_observation` verifica tutti i 132
+elementi e la parità tra ambiente e adattatore. Il training non importa la demo: contatti più
 rigidi, rampe e postura di arresto appartengono solo al controllo interattivo.
 
 ## Workspace
