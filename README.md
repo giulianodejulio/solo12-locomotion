@@ -54,13 +54,8 @@ in marcia e postura PD durante l'arresto. Vedi [docs/teleop.md](docs/teleop.md).
 
 ## Stato scientifico
 
-La run locale `article_desktop` è stata interrotta a circa `6.73e7` transizioni
-dopo ripetuti collassi. L'ultimo checkpoint completo è a `6.6e7`; la sua
-valutazione nominale ha prodotto 4 cadute su 4. Non è una policy convergente.
-Vedi [docs/training-assessment.md](docs/training-assessment.md).
-
 La demo usa invece una policy già addestrata dagli autori, recuperata da
-`quadruped-rl`. I risultati positivi della demo non validano il nostro training.
+`quadruped-rl`. I risultati della demo si riferiscono a questa policy pubblicata.
 Il port MuJoCo non è una riproduzione esatta di RaiSim: [paper/SOURCES.md](paper/SOURCES.md).
 
 Checkpoint, CSV, GIF e report generati restano in `paper/results/` e

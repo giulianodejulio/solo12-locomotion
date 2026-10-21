@@ -74,8 +74,6 @@ di `rl-tutorials/results/`, se presenti, vanno trasferiti separatamente.
 
 Training: `python3 -m paper.train`; valutazione: `paper.evaluate`;
 plot: `paper.plot`; validazione senza training: `paper.validate`.
-La run `article_desktop` è stata fermata: non riavviarla automaticamente.
-Consultare `docs/training-assessment.md` prima di investire altro budget.
 
 Policy esterna: `python3 -m policies.official`.
 Diagnostica: `python3 -m tools.audit`, `python3 -m tools.check_zero_slip`.

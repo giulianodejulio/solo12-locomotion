@@ -17,7 +17,7 @@ as working directory (no installation and no changes to the workspace image):
 
 ```bash
 docker exec -it -w $HOME/workspaces/solo12_rl_ws/src/solo12-locomotion \
-  docker_solo12_rl_ws python3 -m paper.train --run article_desktop --num-envs 8 --steps 300000000
+  docker_solo12_rl_ws python3 -m paper.train --run article_run --num-envs 8 --steps 300000000
 ```
 
 That is the full reported sample budget, 3e8 transitions / 10000 PPO updates.
@@ -37,7 +37,7 @@ checkpoint with fixed test commands, frozen normalization and full penalties:
 ```bash
 docker exec -it \
   -w $HOME/workspaces/solo12_rl_ws/src/solo12-locomotion \
-  docker_solo12_rl_ws python3 -m paper.evaluate --run article_desktop --episodes 10 --gif
+  docker_solo12_rl_ws python3 -m paper.evaluate --run article_run --episodes 10 --gif
 ```
 
 The portable container defaults to OSMesa software rendering. The original
@@ -59,7 +59,7 @@ To resume the latest complete checkpoint after Ctrl+C/interruption:
 
 ```bash
 docker exec -it -w $HOME/workspaces/solo12_rl_ws/src/solo12-locomotion \
-  docker_solo12_rl_ws python3 -m paper.train --run article_desktop --resume --steps 300000000
+  docker_solo12_rl_ws python3 -m paper.train --run article_run --resume --steps 300000000
 ```
 
 A pilot can be extended with `--run article_pilot --resume --steps 300000000`.
@@ -86,7 +86,7 @@ Rebuild all existing plots without simulation:
 
 ```bash
 docker exec -w $HOME/workspaces/solo12_rl_ws/src/solo12-locomotion \
-  docker_solo12_rl_ws python3 -m paper.plot --run article_desktop
+  docker_solo12_rl_ws python3 -m paper.plot --run article_run
 ```
 
 To assess locomotion, look at speed error + slip + contact patterns + fall rate

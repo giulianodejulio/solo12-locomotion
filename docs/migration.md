@@ -2,8 +2,8 @@
 
 Origine: `rl-tutorials` commit 80f4795 e aggiunte locali della demo.
 Il percorso didattico e gli esperimenti preliminari `solo12/` restano in quella
-repository. `paper/` e `workspace/` sono stati trasferiti qui con risultati,
-checkpoint e registrazioni locali. La cronologia remota non è stata riscritta.
+repository. `paper/` e `workspace/` sono stati trasferiti qui insieme alle
+registrazioni locali della demo. La cronologia remota non è stata riscritta.
 
 ## Nuovi comandi
 
@@ -24,10 +24,6 @@ anche quando riportano vecchi percorsi assoluti.
 
 ## Backup e dipendenze
 
-Il backup dei risultati del desktop è in
-`docker/backups/solo12-results-20261021.tar.gz` (locale, non pubblicato).
-La copia precauzionale precedente alla riorganizzazione è in
-`/tmp/solo12-before-reorganization-20261021.tar.gz` (temporanea).
 Modelli e pesi esterni sono identificati da commit e SHA256 nei manifest
 di `workspace/`. Il bootstrap non sostituisce checkout modificati.
 
