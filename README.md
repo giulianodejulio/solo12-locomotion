@@ -4,6 +4,11 @@ Locomozione Solo12 in MuJoCo: port sperimentale di un metodo RaiSim, valutazione
 di policy pubblicate e demo interattiva con key teleop. Il percorso didattico
 precedente resta in [rl-tutorials](https://github.com/giulianodejulio/rl-tutorials).
 
+Il runtime RaiSim dedicato per lavorare con gli strumenti originali è descritto
+in [workspace/raisim/README.md](workspace/raisim/README.md). Include preparazione
+del container e verifica del machine ID per la licenza; il training originale
+non è ancora stato validato.
+
 ## Fasi e responsabilità
 
 | Directory | Fase |
